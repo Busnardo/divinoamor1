@@ -1,0 +1,23 @@
+//Para criar um header em React Native, você pode usar o componente da biblioteca react-navigation-stack. Este componente permite personalizar o conteúdo do cabeçalho,
+como o título da página, botões de ação e outras informações.
+Para usá-lo, você precisa importá-lo do react-navigation-stack e adicionar o cabeçalho na definição de rota do componente.
+
+ import React from 'react';
+import { View, Text, Button } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Header } from 'react-navigation-stack';
+
+export default function ProfileScreen() {
+  const navigation = useNavigation();
+
+  return (
+    <View>
+      <Header
+        backgroundColor="#fff"
+        centerComponent={{ text: 'Perfil', style: { color: '#000', fontSize: 18 } }}
+        leftComponent={<Button title="Voltar" onPress={() => navigation.goBack()} />}
+      />
+      <Text>Esta é a tela de perfil.</Text>
+    </View>
+  );
+}
