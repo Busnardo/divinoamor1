@@ -1,0 +1,57 @@
+//Para criar um importador de imagens de um banco de dados e preciso:
+  1- Realizar a conexção com o Banco de Dados, pra isso é necessário uma biblioteca para se conectar ao banco de dados,
+como o react-native-sqlite-storage ou o react-native-sqlite-2.
+  2- Prercisará selecionar as imagens do banco de dados que deseja importar. Isso pode ser feito com uma consulta SQL.
+  3- Para exibir as imagens na aplicação, você precisará converter as imagens em um formato adequado, como base64 ou Blob.
+  4- Precisará armazenar as imagens em uma variável de estado ou em um banco de dados local como o AsyncStorage do React Native.
+  5- E finalmente, você precisará exibir as imagens importadas na aplicação.
+Isso pode ser feito usando um componente de imagem como o Image do React Native e passando o caminho da imagem para a propriedade source.
+
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image } from 'react-native';
+import SQLite from 'react-native-sqlite-storage';
+
+const db = SQLite.openDatabase({
+  name: 'myDatabase.db',
+  location: 'default',
+});
+
+export default function ImageImporter() {
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT * FROM images',
+        [],
+        (tx, results) => {
+          const len = results.rows.length;
+          const imagesArray = [];
+
+          for (let i = 0; i < len; i++) {
+            const row = results.rows.item(i);
+            const imageData = row.image_data;
+
+            // Converte a imagem para base64
+            const base64Image = imageData.toString('base64');
+
+            imagesArray.push(base64Image);
+          }
+
+          setImages(imagesArray);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    });
+  }, []);
+
+  return (
+    <View>
+      {images.map((image, index) => (
+        <Image key={index} source={{ uri: `data:image/png;base64,${image}` }} />
+      ))}
+    </View>
+  );
+}
